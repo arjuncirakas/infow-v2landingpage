@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import HeroCards from './HeroCards'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
 
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -8,6 +9,7 @@ function prefersReducedMotion() {
 
 export default function Hero() {
   const heroRef = useRef(null)
+  const { t } = useLanguage()
 
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined
@@ -80,26 +82,25 @@ export default function Hero() {
     <section className="hero" ref={heroRef}>
       <div className="hero__content">
         <div className="hero__badge" data-hero="badge" data-hero-animate>
-          One platform for your entire operation
+          {t('hero.badge')}
         </div>
 
         <h1 className="hero__headline" data-hero="headline">
           <span className="hero__headline-line">
-            <span className="hero__headline-line-inner">One platform.</span>
+            <span className="hero__headline-line-inner">{t('hero.headline1')}</span>
           </span>
           <span className="hero__headline-line hero__accent">
-            <span className="hero__headline-line-inner">Complete operational control.</span>
+            <span className="hero__headline-line-inner">{t('hero.headline2')}</span>
           </span>
         </h1>
 
         <p className="hero__subtext" data-hero="subtext" data-hero-animate>
-          Manage tasks, petty cash, funds, service requests, and your whole team across every site and
-          industry, in real time.
+          {t('hero.subtext')}
         </p>
 
         <div className="hero__ctas">
           <a href="#contact" className="hero__cta hero__cta--primary" data-hero="cta" data-hero-animate>
-            <span className="hero__cta-label">Contact us</span>
+            <span className="hero__cta-label">{t('hero.contactUs')}</span>
             <span className="hero__cta-icon" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path

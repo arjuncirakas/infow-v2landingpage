@@ -1,55 +1,16 @@
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
+import { PEOPLE_MEDIA } from '../i18n/media.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
-const PEOPLE = [
-  {
-    id: 'operations-leader',
-    image:
-      'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&w=640&h=800&q=80',
-    title: 'Operations leader',
-  },
-  {
-    id: 'field-technician',
-    image:
-      'https://images.unsplash.com/photo-1504328345606-18bbc8c9d7d1?auto=format&fit=crop&w=640&h=800&q=80',
-    title: 'Field technician',
-  },
-  {
-    id: 'site-manager',
-    image:
-      'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&w=640&h=800&q=80',
-    title: 'Site manager',
-  },
-  {
-    id: 'healthcare-staff',
-    image:
-      'https://images.unsplash.com/photo-1559839734-2b71ea197ec2?auto=format&fit=crop&w=640&h=800&q=80',
-    title: 'Healthcare staff',
-  },
-  {
-    id: 'warehouse-lead',
-    image:
-      'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&w=640&h=800&q=80',
-    title: 'Warehouse lead',
-  },
-  {
-    id: 'team-coordinator',
-    image:
-      'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&w=640&h=800&q=80',
-    title: 'Team coordinator',
-  },
-]
-
-// Fan layout: outer cards tilt more; slight lift forms a gentle arc at the top.
 const LAYOUT = [
   { rot: -9, y: -10 },
-  { rot: -5.5, y: -4 },
-  { rot: -2, y: 0 },
-  { rot: 2, y: 0 },
-  { rot: 5.5, y: -4 },
+  { rot: -4.5, y: -3 },
+  { rot: 0, y: 0 },
+  { rot: 4.5, y: -3 },
   { rot: 9, y: -10 },
 ]
 
@@ -59,6 +20,7 @@ function prefersReducedMotion() {
 
 export default function PeopleSection() {
   const sectionRef = useRef(null)
+  const { t } = useLanguage()
 
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined
@@ -97,29 +59,41 @@ export default function PeopleSection() {
   return (
     <section id="people" className="people" ref={sectionRef} aria-labelledby="people-heading">
       <header className="people__header" data-people="header">
-        <p className="people__badge">Built around people</p>
+        <p className="people__badge">{t('people.badge')}</p>
         <h2 id="people-heading" className="people__title">
-          Made <span className="people__title-accent">for</span> the{' '}
-          <span className="people__title-accent">people</span> who keep work moving.
+          {t('people.titleBefore')}
+          <span className="people__title-accent">{t('people.titleAccent1')}</span>
+          {t('people.titleMiddle')}
+          <span className="people__title-accent">{t('people.titleAccent2')}</span>
+          {t('people.titleAfter')}
         </h2>
       </header>
 
       <div className="people__fan-wrap">
         <div className="people__fan" data-people="fan">
-          {PEOPLE.map((person, index) => (
-            <div
-              key={person.id}
-              className="people__card"
-              style={{
-                '--rot': `${LAYOUT[index].rot}deg`,
-                '--y': `${LAYOUT[index].y}px`,
-              }}
-            >
-              <img src={person.image} alt="" className="people__card-image" loading="lazy" />
-              <div className="people__card-overlay" aria-hidden="true" />
-              <p className="people__card-title">{person.title}</p>
-            </div>
-          ))}
+          {PEOPLE_MEDIA.map((person, index) => {
+            const title = t(`people.roles.${person.roleKey}`)
+
+            return (
+              <div
+                key={person.id}
+                className="people__card"
+                style={{
+                  '--rot': `${LAYOUT[index].rot}deg`,
+                  '--y': `${LAYOUT[index].y}px`,
+                }}
+              >
+                <img
+                  src={person.image}
+                  alt={title}
+                  className="people__card-image"
+                  loading="lazy"
+                />
+                <div className="people__card-overlay" aria-hidden="true" />
+                <p className="people__card-title">{title}</p>
+              </div>
+            )
+          })}
         </div>
       </div>
     </section>

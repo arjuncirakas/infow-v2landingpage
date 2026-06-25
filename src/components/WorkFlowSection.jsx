@@ -2,6 +2,7 @@ import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
 import InflowHubCard from './InflowHubCard'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -9,12 +10,12 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-const OLD_TOOLS = [
-  { id: 'email', label: 'Email', x: 14, y: 20, rotate: -11 },
-  { id: 'calendar', label: 'Calendar', x: 80, y: 16, rotate: 9 },
-  { id: 'chats', label: 'Chats', x: 12, y: 80, rotate: -7 },
-  { id: 'cash', label: 'Cash book', x: 84, y: 76, rotate: 8 },
-  { id: 'sheets', label: 'Sheets', x: 50, y: 48, rotate: -3 },
+const OLD_TOOL_IDS = [
+  { id: 'email', x: 14, y: 20, rotate: -11 },
+  { id: 'calendar', x: 80, y: 16, rotate: 9 },
+  { id: 'chats', x: 12, y: 80, rotate: -7 },
+  { id: 'cash', x: 84, y: 76, rotate: 8 },
+  { id: 'sheets', x: 50, y: 48, rotate: -3 },
 ]
 
 const CHAOS_PATHS = [
@@ -98,6 +99,12 @@ function WorkflowNode({ tool, style, rotate }) {
 
 export default function WorkFlowSection() {
   const sectionRef = useRef(null)
+  const { t } = useLanguage()
+
+  const oldTools = OLD_TOOL_IDS.map((tool) => ({
+    ...tool,
+    label: t(`workflow.tools.${tool.id}`),
+  }))
 
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined
@@ -139,10 +146,10 @@ export default function WorkFlowSection() {
 
       <div className="workflow__inner">
         <header className="workflow__header" data-workflow="header">
-          <p className="workflow__eyebrow">Where work breaks down</p>
+          <p className="workflow__eyebrow">{t('workflow.eyebrow')}</p>
           <h2 id="workflow-heading" className="workflow__title">
-            Work should flow. Most{' '}
-            <span className="workflow__title-accent">organizations don&apos;t.</span>
+            {t('workflow.titleBefore')}
+            <span className="workflow__title-accent">{t('workflow.titleAccent')}</span>
           </h2>
         </header>
 
@@ -151,7 +158,7 @@ export default function WorkFlowSection() {
             <div className="workflow__panel-surface" aria-hidden="true" />
             <p className="workflow__panel-label">
               <span className="workflow__panel-dot workflow__panel-dot--muted" />
-              The old way
+              {t('workflow.oldWay')}
             </p>
 
             <div className="workflow__stage workflow__stage--chaos">
@@ -174,7 +181,7 @@ export default function WorkFlowSection() {
                 ))}
               </svg>
 
-              {OLD_TOOLS.map((tool, index) => (
+              {oldTools.map((tool, index) => (
                 <WorkflowNode
                   key={tool.id}
                   tool={tool}

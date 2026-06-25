@@ -1,19 +1,12 @@
-import { useCallback, useEffect, useRef, useState } from 'react'
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
 
-const NAV_LINKS = [
-  { id: 'platform', label: 'Platform', href: '#platform' },
-  { id: 'people', label: 'People', href: '#people' },
-  { id: 'process', label: 'Process', href: '#process' },
-  { id: 'industries', label: 'Industries', href: '#industries' },
-  { id: 'faq', label: 'FAQ', href: '#faq' },
-]
-
-const LANGUAGES = [
-  { code: 'en', label: 'English', short: 'EN' },
-  { code: 'es', label: 'Español', short: 'ES' },
-  { code: 'fr', label: 'Français', short: 'FR' },
-  { code: 'de', label: 'Deutsch', short: 'DE' },
-  { code: 'ar', label: 'العربية', short: 'AR' },
+const NAV_IDS = [
+  { id: 'platform', key: 'platform' },
+  { id: 'people', key: 'people' },
+  { id: 'process', key: 'process' },
+  { id: 'industries', key: 'industries' },
+  { id: 'faq', key: 'faq' },
 ]
 
 function GlobeIcon() {
@@ -66,10 +59,11 @@ function CloseIcon() {
   )
 }
 
-function LanguageSwitcher({ value, onChange, className = '' }) {
+function LanguageSwitcher({ className = '' }) {
+  const { language, setLanguage, languages, t } = useLanguage()
   const [open, setOpen] = useState(false)
   const rootRef = useRef(null)
-  const active = LANGUAGES.find((lang) => lang.code === value) ?? LANGUAGES[0]
+  const active = languages.find((lang) => lang.code === language) ?? languages[0]
 
   useEffect(() => {
     if (!open) return undefined
@@ -85,9 +79,11 @@ function LanguageSwitcher({ value, onChange, className = '' }) {
   }, [open])
 
   const selectLanguage = (code) => {
-    onChange(code)
+    setLanguage(code)
     setOpen(false)
   }
+
+  const languageAria = t('nav.languageLabel').replace('{{label}}', active.label)
 
   return (
     <div className={`navbar__lang ${className}`.trim()} ref={rootRef}>
@@ -96,7 +92,7 @@ function LanguageSwitcher({ value, onChange, className = '' }) {
         className="navbar__lang-trigger"
         aria-expanded={open}
         aria-haspopup="listbox"
-        aria-label={`Language: ${active.label}`}
+        aria-label={languageAria}
         onClick={() => setOpen((isOpen) => !isOpen)}
       >
         <span className="navbar__lang-icon">
@@ -109,14 +105,14 @@ function LanguageSwitcher({ value, onChange, className = '' }) {
       </button>
 
       {open && (
-        <ul className="navbar__lang-menu" role="listbox" aria-label="Select language">
-          {LANGUAGES.map((lang) => (
-            <li key={lang.code} role="option" aria-selected={lang.code === value}>
+        <ul className="navbar__lang-menu" role="listbox" aria-label={t('nav.selectLanguage')}>
+          {languages.map((lang) => (
+            <li key={lang.code} role="option" aria-selected={lang.code === language}>
               <button
                 type="button"
                 className={[
                   'navbar__lang-option',
-                  lang.code === value ? 'navbar__lang-option--active' : '',
+                  lang.code === language ? 'navbar__lang-option--active' : '',
                 ]
                   .filter(Boolean)
                   .join(' ')}
@@ -134,27 +130,22 @@ function LanguageSwitcher({ value, onChange, className = '' }) {
 }
 
 export default function Navbar() {
+  const { t } = useLanguage()
   const [scrolled, setScrolled] = useState(false)
   const [menuOpen, setMenuOpen] = useState(false)
   const [activeId, setActiveId] = useState('')
-  const [language, setLanguage] = useState(() => {
-    if (typeof window === 'undefined') return 'en'
-    return window.localStorage.getItem('inflow-lang') ?? 'en'
-  })
+
+  const navLinks = useMemo(
+    () =>
+      NAV_IDS.map((link) => ({
+        id: link.id,
+        href: `#${link.id}`,
+        label: t(`nav.${link.key}`),
+      })),
+    [t],
+  )
 
   const closeMenu = useCallback(() => setMenuOpen(false), [])
-
-  const handleLanguageChange = useCallback((code) => {
-    setLanguage(code)
-    window.localStorage.setItem('inflow-lang', code)
-    document.documentElement.lang = code
-    document.documentElement.dir = code === 'ar' ? 'rtl' : 'ltr'
-  }, [])
-
-  useEffect(() => {
-    document.documentElement.lang = language
-    document.documentElement.dir = language === 'ar' ? 'rtl' : 'ltr'
-  }, [language])
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 20)
@@ -164,7 +155,7 @@ export default function Navbar() {
   }, [])
 
   useEffect(() => {
-    const sections = NAV_LINKS.map((link) => document.getElementById(link.id)).filter(Boolean)
+    const sections = navLinks.map((link) => document.getElementById(link.id)).filter(Boolean)
 
     const observer = new IntersectionObserver(
       (entries) => {
@@ -181,7 +172,7 @@ export default function Navbar() {
 
     sections.forEach((section) => observer.observe(section))
     return () => observer.disconnect()
-  }, [])
+  }, [navLinks])
 
   useEffect(() => {
     if (!menuOpen) return undefined
@@ -214,13 +205,13 @@ export default function Navbar() {
     >
       <div className="navbar__shell">
         <div className="navbar__float">
-          <a href="/" className="navbar__logo" aria-label="InFlow home">
+          <a href="/" className="navbar__logo" aria-label={t('nav.inflowHome')}>
             <img src="/inflow-logo.png" alt="InFlow" className="navbar__logo-img" />
           </a>
 
           <nav className="navbar__nav" aria-label="Main navigation">
             <ul className="navbar__list">
-              {NAV_LINKS.map((link) => (
+              {navLinks.map((link) => (
                 <li key={link.id}>
                   <a
                     href={link.href}
@@ -239,14 +230,10 @@ export default function Navbar() {
           </nav>
 
           <div className="navbar__actions">
-            <LanguageSwitcher
-              value={language}
-              onChange={handleLanguageChange}
-              className="navbar__lang--desktop"
-            />
+            <LanguageSwitcher className="navbar__lang--desktop" />
 
             <a href="/sign-in" className="navbar__cta" onClick={closeMenu}>
-              <span className="navbar__cta-label">Sign in</span>
+              <span className="navbar__cta-label">{t('nav.signIn')}</span>
               <span className="navbar__cta-icon" aria-hidden="true">
                 <ArrowUpRight />
               </span>
@@ -257,7 +244,7 @@ export default function Navbar() {
               className="navbar__toggle"
               aria-expanded={menuOpen}
               aria-controls="navbar-mobile-menu"
-              aria-label={menuOpen ? 'Close menu' : 'Open menu'}
+              aria-label={menuOpen ? t('nav.closeMenu') : t('nav.openMenu')}
               onClick={() => setMenuOpen((open) => !open)}
             >
               <span className="navbar__toggle-line" />
@@ -277,14 +264,14 @@ export default function Navbar() {
         <button
           type="button"
           className="navbar__mobile-backdrop"
-          aria-label="Close menu"
+          aria-label={t('nav.closeMenu')}
           tabIndex={menuOpen ? 0 : -1}
           onClick={closeMenu}
         />
         <div className="navbar__mobile-panel" role="dialog" aria-modal="true" aria-label="Menu">
           <div className="navbar__mobile-top">
             <div className="navbar__mobile-brand">
-              <span className="navbar__mobile-kicker">Navigation</span>
+              <span className="navbar__mobile-kicker">{t('nav.navigation')}</span>
               <span className="navbar__mobile-brandname">InFlow</span>
             </div>
             <button
@@ -293,14 +280,14 @@ export default function Navbar() {
               onClick={closeMenu}
               tabIndex={menuOpen ? 0 : -1}
             >
-              <span>Close</span>
+              <span>{t('nav.close')}</span>
               <CloseIcon />
             </button>
           </div>
 
           <nav className="navbar__mobile-nav" aria-label="Mobile navigation">
             <ul className="navbar__mobile-list">
-              {NAV_LINKS.map((link, index) => (
+              {navLinks.map((link, index) => (
                 <li key={link.id} style={{ '--i': index }}>
                   <a
                     href={link.href}
@@ -323,17 +310,13 @@ export default function Navbar() {
 
           <div className="navbar__mobile-footer">
             <div className="navbar__mobile-footer-row">
-              <LanguageSwitcher
-                value={language}
-                onChange={handleLanguageChange}
-                className="navbar__lang--panel"
-              />
+              <LanguageSwitcher className="navbar__lang--panel" />
               <a href="/sign-in" className="navbar__mobile-signin" onClick={closeMenu}>
-                Sign in
+                {t('nav.signIn')}
               </a>
             </div>
             <a href="#contact" className="navbar__mobile-cta" onClick={closeMenu}>
-              <span className="navbar__mobile-cta-label">Request Demo</span>
+              <span className="navbar__mobile-cta-label">{t('nav.requestDemo')}</span>
               <span className="navbar__mobile-cta-icon" aria-hidden="true">
                 <ArrowUpRight />
               </span>

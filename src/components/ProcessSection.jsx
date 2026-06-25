@@ -1,6 +1,8 @@
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
+import { PROCESS_IMAGE } from '../i18n/media.js'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -8,36 +10,9 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
-const PILLARS = [
-  {
-    id: 'tasks',
-    title: 'Tasks & workflows',
-    description: 'Assign work, automate the routing, and keep every job moving to done.',
-  },
-  {
-    id: 'cash',
-    title: 'Cash & expenses',
-    description: 'Track petty cash, funds, and expenses — with approvals and a clear trail.',
-  },
-  {
-    id: 'requests',
-    title: 'Service requests & approvals',
-    description: 'Raise, route, and resolve service requests without the back-and-forth.',
-  },
-  {
-    id: 'people',
-    title: 'People & access',
-    description: 'Manage your whole team — roles, permissions, and who owns what.',
-  },
-  {
-    id: 'reports',
-    title: 'Reports & decisions',
-    description: 'Live dashboards across all of it, so you act with confidence.',
-  },
-]
-
 export default function ProcessSection() {
   const sectionRef = useRef(null)
+  const { tr, t } = useLanguage()
 
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined
@@ -116,14 +91,15 @@ export default function ProcessSection() {
       <div className="process__inner">
         <div className="process__layout" data-process="layout">
           <div className="process__intro" data-process="intro">
-            <p className="process__badge">Everything in one platform</p>
+            <p className="process__badge">{t('process.badge')}</p>
             <h2 id="process-heading" className="process__title">
-              Built around the natural flow of work.
+              {t('process.titleBefore')}
+              <span className="process__title-accent">{t('process.titleAccent')}</span>
             </h2>
             <div className="process__media" data-process="media">
               <img
-                src="https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1200&q=80"
-                alt="Operations team collaborating around a shared workspace"
+                src={PROCESS_IMAGE}
+                alt={t('process.imageAlt')}
                 className="process__image"
                 loading="lazy"
               />
@@ -132,7 +108,7 @@ export default function ProcessSection() {
 
           <ol className="process__steps" data-process="steps">
             <span className="process__timeline" data-process="timeline" aria-hidden="true" />
-            {PILLARS.map((pillar, index) => (
+            {tr.process.pillars.map((pillar, index) => (
               <li key={pillar.id} className="process__step" data-process="step">
                 <div className="process__step-marker" aria-hidden="true">
                   <span className="process__step-number">{index + 1}</span>
@@ -148,7 +124,7 @@ export default function ProcessSection() {
 
         <div className="process__footer" data-process="footer">
           <a href="#contact" className="process__cta">
-            <span className="process__cta-label">One platform. Complete operational control.</span>
+            <span className="process__cta-label">{t('process.cta')}</span>
             <span className="process__cta-icon" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path

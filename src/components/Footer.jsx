@@ -1,6 +1,7 @@
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
 
 gsap.registerPlugin(ScrollTrigger)
 
@@ -8,10 +9,24 @@ function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
 }
 
+const STORE_LINKS = {
+  google:
+    'https://play.google.com/store/apps/details?id=com.cirakas.inflow.app',
+  apple: 'https://apps.apple.com/in/app/inflow-team-coordination/id6753862375',
+}
+
 function StoreBadge({ store }) {
+  const { t } = useLanguage()
+
   if (store === 'google') {
     return (
-      <a href="#" className="footer__store-badge" aria-label="Get it on Google Play">
+      <a
+        href={STORE_LINKS.google}
+        className="footer__store-badge"
+        aria-label={t('footer.googlePlayAria')}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
         <span className="footer__store-icon" aria-hidden="true">
           <svg width="22" height="24" viewBox="0 0 22 24" fill="none">
             <path d="M1.2 1.4v21.2c0 .7.8 1.1 1.4.7l12.2-7.1-12.2-7.3c-.6-.4-1.4 0-1.4.5Z" fill="#00C1FF" />
@@ -21,15 +36,21 @@ function StoreBadge({ store }) {
           </svg>
         </span>
         <span className="footer__store-copy">
-          <span className="footer__store-eyebrow">Get it on</span>
-          <span className="footer__store-name">Google Play</span>
+          <span className="footer__store-eyebrow">{t('footer.getItOn')}</span>
+          <span className="footer__store-name">{t('footer.googlePlay')}</span>
         </span>
       </a>
     )
   }
 
   return (
-    <a href="#" className="footer__store-badge" aria-label="Download on the App Store">
+    <a
+      href={STORE_LINKS.apple}
+      className="footer__store-badge"
+      aria-label={t('footer.appStoreAria')}
+      target="_blank"
+      rel="noopener noreferrer"
+    >
       <span className="footer__store-icon" aria-hidden="true">
         <svg width="20" height="24" viewBox="0 0 20 24" fill="currentColor">
           <path d="M15.8 12.6c0-2.5 1.4-3.8 3.5-4.1-1.3-1.9-3.4-2.1-4.1-2.1-1.8-.2-3.5 1.1-4.4 1.1-.9 0-2.3-1-3.8-1-2 0-3.8 1.2-4.8 3-2.1 3.6-.5 8.8 1.5 11.7 1 1.5 2.2 3.1 3.8 3.1 1.5 0 2.1-1 3.9-1 1.8 0 2.3 1 3.9.9 1.6 0 2.6-1.5 3.6-3 1.1-1.6 1.6-3.2 1.6-3.3-.1 0-3.1-1.2-3.1-4.9Z" />
@@ -37,54 +58,16 @@ function StoreBadge({ store }) {
         </svg>
       </span>
       <span className="footer__store-copy">
-        <span className="footer__store-eyebrow">Download on the</span>
-        <span className="footer__store-name">App Store</span>
+        <span className="footer__store-eyebrow">{t('footer.downloadOn')}</span>
+        <span className="footer__store-name">{t('footer.appStore')}</span>
       </span>
     </a>
   )
 }
 
-function SocialIcon({ type }) {
-  const props = {
-    width: 18,
-    height: 18,
-    viewBox: '0 0 24 24',
-    fill: 'none',
-    stroke: 'currentColor',
-    strokeWidth: 1.75,
-    'aria-hidden': true,
-  }
-
-  switch (type) {
-    case 'instagram':
-      return (
-        <svg {...props}>
-          <rect x="4" y="4" width="16" height="16" rx="4.5" />
-          <circle cx="12" cy="12" r="3.5" />
-          <circle cx="17.2" cy="6.8" r="0.8" fill="currentColor" stroke="none" />
-        </svg>
-      )
-    case 'x':
-      return (
-        <svg {...props}>
-          <path d="M5 5l14 14M19 5L5 19" strokeLinecap="round" />
-        </svg>
-      )
-    case 'linkedin':
-      return (
-        <svg {...props}>
-          <rect x="4" y="4" width="16" height="16" rx="2" />
-          <path d="M8 10v7M8 7.2v.01" strokeLinecap="round" />
-          <path d="M12 17v-4.2c0-1.2.9-2.1 2.1-2.1s1.9.8 1.9 2.1V17" strokeLinecap="round" />
-        </svg>
-      )
-    default:
-      return null
-  }
-}
-
 export default function Footer() {
   const footerRef = useRef(null)
+  const { t } = useLanguage()
 
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined
@@ -157,30 +140,14 @@ export default function Footer() {
       <div className="footer__inner" data-footer="inner">
         <div className="footer__hero">
           <div className="footer__brand-main" data-footer="brand">
-            <a href="/" className="footer__logo" aria-label="InFlow home">
+            <a href="/" className="footer__logo" aria-label={t('footer.homeAria')}>
               <img src="/inflow-logo.png" alt="InFlow" className="footer__logo-img" />
             </a>
-            <p className="footer__desc">
-              An AI-powered work management platform that brings tasks, teams, communication,
-              workflows, approvals, and insights into one intelligent workspace.
-            </p>
-            <div className="footer__social" aria-label="Social links">
-              <a href="#" className="footer__social-link" aria-label="Instagram">
-                <SocialIcon type="instagram" />
-              </a>
-              <a href="#" className="footer__social-link" aria-label="X">
-                <SocialIcon type="x" />
-              </a>
-              <a href="#" className="footer__social-link" aria-label="LinkedIn">
-                <SocialIcon type="linkedin" />
-              </a>
-            </div>
+            <p className="footer__desc">{t('footer.description')}</p>
           </div>
 
           <div className="footer__aside" data-footer="aside">
-            <p className="footer__tagline">
-              Empowering organizations to work smarter, move faster, and stay connected.
-            </p>
+            <p className="footer__tagline">{t('footer.tagline')}</p>
             <div className="footer__stores">
               <StoreBadge store="google" />
               <StoreBadge store="apple" />
@@ -191,7 +158,7 @@ export default function Footer() {
         <div className="footer__divider" data-footer="divider" aria-hidden="true" />
 
         <p className="footer__copyright" data-footer="copyright">
-          © 2026 All rights reserved
+          {t('footer.copyright')}
         </p>
       </div>
 

@@ -1,23 +1,15 @@
 import { useCallback, useLayoutEffect, useRef, useState } from 'react'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
 
-const MODULES = [
-  { id: 'tasks', label: 'Tasks' },
-  { id: 'finance', label: 'Finance' },
-  { id: 'requests', label: 'Requests' },
-  { id: 'chat', label: 'Chat' },
-  { id: 'reports', label: 'Reports' },
-]
+const MODULE_IDS = ['tasks', 'finance', 'requests', 'chat', 'reports']
 
 const GHOST_SLOTS = [
-  { slot: 'tl', id: 'email', label: 'Email' },
-  { slot: 'tc', id: 'sheets', label: 'Sheets' },
-  { slot: 'tr', id: 'calendar', label: 'Calendar' },
-  { slot: 'bl', id: 'chats', label: 'Chats' },
-  { slot: 'br', id: 'cash', label: 'Cash book' },
+  { slot: 'tl', id: 'email', labelKey: 'email' },
+  { slot: 'tc', id: 'sheets', labelKey: 'sheets' },
+  { slot: 'tr', id: 'calendar', labelKey: 'calendar' },
+  { slot: 'bl', id: 'chats', labelKey: 'chats' },
+  { slot: 'br', id: 'cash', labelKey: 'cash' },
 ]
-
-const TOP_GHOSTS = GHOST_SLOTS.filter((tool) => ['tl', 'tc', 'tr'].includes(tool.slot))
-const BOTTOM_GHOSTS = GHOST_SLOTS.filter((tool) => ['bl', 'br'].includes(tool.slot))
 
 const FLOW_DURATION = '3s'
 
@@ -185,10 +177,18 @@ function GhostTool({ tool, ghostRef }) {
 }
 
 export default function InflowHubCard() {
+  const { t } = useLanguage()
   const layoutRef = useRef(null)
   const platformRef = useRef(null)
   const ghostRefs = useRef({})
   const [lines, setLines] = useState({ width: 0, height: 0, paths: [] })
+
+  const ghostTools = GHOST_SLOTS.map((tool) => ({
+    ...tool,
+    label: t(`workflow.tools.${tool.labelKey}`),
+  }))
+  const topGhosts = ghostTools.filter((tool) => ['tl', 'tc', 'tr'].includes(tool.slot))
+  const bottomGhosts = ghostTools.filter((tool) => ['bl', 'br'].includes(tool.slot))
 
   const setGhostRef = useCallback(
     (id) => (node) => {
@@ -222,7 +222,18 @@ export default function InflowHubCard() {
         }
       }).filter(Boolean)
 
-      setLines({ width: layoutRect.width, height: layoutRect.height, paths })
+      setLines((prev) => {
+        const next = { width: layoutRect.width, height: layoutRect.height, paths }
+        if (
+          prev.width === next.width &&
+          prev.height === next.height &&
+          prev.paths.length === next.paths.length &&
+          prev.paths.every((path, index) => path.d === next.paths[index]?.d)
+        ) {
+          return prev
+        }
+        return next
+      })
     }
 
     updateLines()
@@ -254,7 +265,7 @@ export default function InflowHubCard() {
 
       <p className="workflow__panel-label workflow__panel-label--accent">
         <span className="workflow__panel-dot workflow__panel-dot--accent" />
-        With inFlow
+        {t('workflow.withInflow')}
       </p>
 
       <div className="workflow__stage workflow__stage--merge">
@@ -285,7 +296,7 @@ export default function InflowHubCard() {
             </svg>
           )}
 
-          {TOP_GHOSTS.map((tool) => (
+          {topGhosts.map((tool) => (
             <GhostTool key={tool.id} tool={tool} ghostRef={setGhostRef(tool.id)} />
           ))}
 
@@ -297,31 +308,31 @@ export default function InflowHubCard() {
                 </span>
                 <div>
                   <span className="inflow-merge__name">InFlow</span>
-                  <span className="inflow-merge__tag">One platform</span>
+                  <span className="inflow-merge__tag">{t('workflow.hub.onePlatform')}</span>
                 </div>
               </div>
               <span className="inflow-merge__sync">
                 <span className="inflow-merge__sync-dot" />
-                All synced
+                {t('workflow.hub.allSynced')}
               </span>
             </header>
 
             <div className="inflow-merge__modules">
-              {MODULES.map((mod) => (
-                <span key={mod.id} className="inflow-merge__chip">
-                  <ModuleIcon type={mod.id} />
-                  {mod.label}
+              {MODULE_IDS.map((modId) => (
+                <span key={modId} className="inflow-merge__chip">
+                  <ModuleIcon type={modId} />
+                  {t(`workflow.hub.modules.${modId}`)}
                 </span>
               ))}
             </div>
 
             <p className="inflow-merge__caption">
-              Tasks, finance, chat, requests &amp; reports — unified
+              {t('workflow.hub.caption')}
             </p>
           </div>
 
           <div className="inflow-merge__bottom">
-            {BOTTOM_GHOSTS.map((tool) => (
+            {bottomGhosts.map((tool) => (
               <GhostTool key={tool.id} tool={tool} ghostRef={setGhostRef(tool.id)} />
             ))}
           </div>

@@ -2907,9 +2907,7 @@ img {
 
 .contact__banner {
   position: relative;
-  display: grid;
-  grid-template-columns: minmax(0, 1.05fr) minmax(0, 0.95fr);
-  align-items: stretch;
+  display: block;
   width: 82%;
   margin: 0 auto;
   min-height: clamp(16rem, 13rem + 10vw, 22rem);
@@ -2933,7 +2931,7 @@ img {
   flex-direction: column;
   justify-content: center;
   gap: clamp(0.875rem, 0.65rem + 0.65vw, 1.25rem);
-  width: auto;
+  width: min(52%, 38rem);
   min-height: clamp(16rem, 13rem + 10vw, 22rem);
   padding: clamp(2rem, 1.5rem + 2vw, 3.5rem) clamp(1.75rem, 1.25rem + 2vw, 3.25rem);
   color: #ffffff;
@@ -3020,8 +3018,9 @@ img {
 }
 
 .contact__visual {
-  position: relative;
-  min-height: 100%;
+  position: absolute;
+  inset: 0;
+  z-index: 0;
   overflow: hidden;
 }
 
@@ -3031,11 +3030,16 @@ img {
   inset: 0;
   z-index: 1;
   background: linear-gradient(
-    90deg,
+    100deg,
     #1d63c4 0%,
-    rgba(29, 99, 196, 0.72) 18%,
-    rgba(18, 63, 150, 0.28) 42%,
-    transparent 68%
+    #1d63c4 16%,
+    rgba(29, 99, 196, 0.96) 28%,
+    rgba(29, 99, 196, 0.84) 38%,
+    rgba(29, 99, 196, 0.62) 48%,
+    rgba(18, 63, 150, 0.38) 58%,
+    rgba(18, 63, 150, 0.16) 70%,
+    rgba(10, 40, 104, 0.04) 82%,
+    transparent 92%
   );
   pointer-events: none;
 }
@@ -3046,16 +3050,16 @@ img {
   height: 100%;
   min-height: clamp(16rem, 13rem + 10vw, 22rem);
   object-fit: cover;
-  object-position: center center;
+  object-position: 72% center;
 }
 
 @media (max-width: 900px) {
   .contact__banner {
-    grid-template-columns: 1fr;
     min-height: auto;
   }
 
   .contact__content {
+    width: 100%;
     min-height: auto;
     padding-bottom: 1.5rem;
   }
@@ -3064,13 +3068,18 @@ img {
     background: linear-gradient(
       180deg,
       #1d63c4 0%,
-      rgba(29, 99, 196, 0.55) 22%,
-      transparent 52%
+      #1d63c4 10%,
+      rgba(29, 99, 196, 0.94) 24%,
+      rgba(29, 99, 196, 0.72) 38%,
+      rgba(18, 63, 150, 0.38) 54%,
+      rgba(18, 63, 150, 0.12) 68%,
+      transparent 84%
     );
   }
 
   .contact__image {
     min-height: clamp(12rem, 30vw, 16rem);
+    object-position: center 35%;
   }
 }
 
@@ -3203,7 +3212,7 @@ img {
 }
 
 .footer__logo-img {
-  height: 2rem;
+  height: clamp(2.75rem, 2.25rem + 1.5vw, 3.25rem);
   width: auto;
   display: block;
 }
@@ -3217,37 +3226,6 @@ img {
   line-height: 1.65;
   letter-spacing: -0.015em;
   color: rgba(14, 26, 43, 0.68);
-}
-
-.footer__social {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.5rem;
-  padding: 0.35rem;
-  border: 1px solid rgba(14, 26, 43, 0.08);
-  border-radius: var(--radius-round);
-  background: rgba(255, 255, 255, 0.72);
-  width: fit-content;
-}
-
-.footer__social-link {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  width: 2.375rem;
-  height: 2.375rem;
-  border-radius: 50%;
-  color: rgba(14, 26, 43, 0.62);
-  transition:
-    color 0.2s ease,
-    background-color 0.2s ease,
-    transform 0.2s ease;
-}
-
-.footer__social-link:hover {
-  color: var(--swatch-dark-900);
-  background: rgba(14, 26, 43, 0.06);
-  transform: translateY(-1px);
 }
 
 .footer__divider {

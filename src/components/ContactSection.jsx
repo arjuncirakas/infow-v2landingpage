@@ -1,11 +1,10 @@
 import { useLayoutEffect, useRef } from 'react'
 import gsap from 'gsap'
 import { ScrollTrigger } from 'gsap/ScrollTrigger'
+import { useLanguage } from '../i18n/LanguageContext.jsx'
+import { CONTACT_IMAGE } from '../i18n/media.js'
 
 gsap.registerPlugin(ScrollTrigger)
-
-const CONTACT_IMAGE =
-  'https://images.unsplash.com/photo-1600880292203-757bb62b4baf?auto=format&fit=crop&w=1200&q=80'
 
 function prefersReducedMotion() {
   return window.matchMedia('(prefers-reduced-motion: reduce)').matches
@@ -13,6 +12,7 @@ function prefersReducedMotion() {
 
 export default function ContactSection() {
   const sectionRef = useRef(null)
+  const { t } = useLanguage()
 
   useLayoutEffect(() => {
     if (prefersReducedMotion()) return undefined
@@ -64,16 +64,13 @@ export default function ContactSection() {
     <section id="contact" className="contact" ref={sectionRef} aria-labelledby="contact-heading">
       <div className="contact__banner" data-contact="banner">
         <div className="contact__content" data-contact="content">
-          <p className="contact__eyebrow">Get in touch</p>
+          <p className="contact__eyebrow">{t('contact.eyebrow')}</p>
           <h2 id="contact-heading" className="contact__title">
-            Ready to bring your operations into one flow?
+            {t('contact.title')}
           </h2>
-          <p className="contact__text">
-            Talk to our team about demos, rollout plans, and how InFlow connects tasks, teams,
-            finance, and field work across every site you run.
-          </p>
+          <p className="contact__text">{t('contact.text')}</p>
           <a href="mailto:hello@inflow.com" className="contact__cta">
-            <span className="contact__cta-label">Contact us</span>
+            <span className="contact__cta-label">{t('contact.contactUs')}</span>
             <span className="contact__cta-icon" aria-hidden="true">
               <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
                 <path
@@ -88,10 +85,10 @@ export default function ContactSection() {
           </a>
         </div>
 
-        <div className="contact__visual" data-contact="visual">
+        <div className="contact__visual" data-contact="visual" aria-hidden="true">
           <img
             src={CONTACT_IMAGE}
-            alt="Operations team collaborating around a shared workspace"
+            alt={t('contact.imageAlt')}
             className="contact__image"
             loading="lazy"
           />
